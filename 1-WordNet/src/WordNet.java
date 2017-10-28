@@ -22,6 +22,7 @@ public class WordNet {
     private final Map<String, List<Integer>> nouns = new HashMap<>();
     private final List<String> synsetsList = new ArrayList<>();
     private final Digraph wordnet;
+    private final SAP sap;
 
     // constructor takes the name of the two input files
     public WordNet(String synsets, String hypernyms) {
@@ -73,6 +74,8 @@ public class WordNet {
 
         if (rootCount != 1)
             throw new IllegalArgumentException();
+
+        sap = new SAP(wordnet);
     }
     
     // returns all WordNet nouns
@@ -93,7 +96,6 @@ public class WordNet {
             throw new IllegalArgumentException();
         if (nounA.equals(nounB))
             return 0;
-        SAP sap  = new SAP(wordnet);
         return sap.length(nouns.get(nounA), nouns.get(nounB));
         
     }
@@ -104,7 +106,6 @@ public class WordNet {
         if (!nouns.containsKey(nounA) || !nouns.containsKey(nounB))
             throw new IllegalArgumentException();
 
-        SAP sap = new SAP(wordnet);
         int vert = sap.ancestor(nouns.get(nounA), nouns.get(nounB));
         if (-1 == vert)
             return null;
