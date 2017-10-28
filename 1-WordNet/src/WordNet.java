@@ -29,8 +29,10 @@ public class WordNet {
 
         In in = new In(synsets);
 
-        String line = null;
-        while ((line = in.readLine()) != null) {
+        while (true) {
+            String line = in.readLine();
+            if (line == null)
+                break;
             String[] fields = line.split(",");
             for (String a : fields[1].split(" ")) {
                 List<Integer> s = nouns.get(a);
@@ -38,7 +40,7 @@ public class WordNet {
                     s = new ArrayList<>();
                     nouns.put(a, s);
                 }
-                s.add(Integer.parseInt(fields[0]));
+                s.add(Integer.valueOf(fields[0]));
             }
             synsetsList.add(fields[1]);
         }
@@ -46,12 +48,15 @@ public class WordNet {
         wordnet = new Digraph(synsetsList.size());
 
         in = new In(hypernyms);
-        while ((line = in.readLine()) != null) {
+        while (true) {
+            String line = in.readLine();
+            if (line == null)
+                break;
             String[] fields = line.split(",");
-            int id = Integer.parseInt(fields[0]);
+            int synsetId = Integer.parseInt(fields[0]);
             for (int i = 1; i < fields.length; ++i) {
                 int j = Integer.parseInt(fields[i]);
-                wordnet.addEdge(i, j);
+                wordnet.addEdge(synsetId, j);
             }
         }
     }
@@ -70,7 +75,7 @@ public class WordNet {
     public int distance(String nounA, String nounB) {
         if (!nouns.containsKey(nounA) || !nouns.containsKey(nounB))
             throw new IllegalArgumentException();
-        if ((Object)nounA == (Object)nounB || nounA.equals(nounB))
+        if (nounA.equals(nounB))
             return 0;
         SAP sap  = new SAP(wordnet);
         return sap.length(nouns.get(nounA), nouns.get(nounB));

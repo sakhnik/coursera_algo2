@@ -18,7 +18,9 @@ public class SAP {
 
     // constructor takes a digraph (not necessarily a DAG)
     public SAP(Digraph G) {
-        g = G;
+        if (G == null)
+            throw new IllegalArgumentException();
+        g = G.reverse().reverse();
     }
     
     private static class Impl {
@@ -26,18 +28,34 @@ public class SAP {
         private int vert;
 
         Impl(Digraph g, int v, int w) {
+            checkIndex(g, v);
+            checkIndex(g, w);
             BreadthFirstDirectedPaths bfsV = new BreadthFirstDirectedPaths(g, v);
             BreadthFirstDirectedPaths bfsW = new BreadthFirstDirectedPaths(g, w);
             search(g, bfsV, bfsW);
         }
 
         Impl(Digraph g, Iterable<Integer> v, Iterable<Integer> w) {
+            checkIndices(g, v);
+            checkIndices(g, w);
             BreadthFirstDirectedPaths bfsV = new BreadthFirstDirectedPaths(g, v);
             BreadthFirstDirectedPaths bfsW = new BreadthFirstDirectedPaths(g, w);
             search(g, bfsV, bfsW);
         }
 
-        private final void search(Digraph g, BreadthFirstDirectedPaths bfsV, BreadthFirstDirectedPaths bfsW) {
+        private void checkIndex(Digraph g, int v) {
+            if (v < 0 || v >= g.V())
+                throw new IndexOutOfBoundsException();
+        }
+
+        private void checkIndices(Digraph g, Iterable<Integer> v) {
+            for (int i : v) {
+                if (i < 0 || i >= g.V())
+                    throw new IndexOutOfBoundsException();
+            }
+        }
+
+        private void search(Digraph g, BreadthFirstDirectedPaths bfsV, BreadthFirstDirectedPaths bfsW) {
             int p = Integer.MAX_VALUE;
             int x = -1;
 
