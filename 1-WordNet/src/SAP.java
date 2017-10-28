@@ -20,7 +20,11 @@ public class SAP {
     public SAP(Digraph G) {
         if (G == null)
             throw new IllegalArgumentException();
-        g = G.reverse().reverse();
+        g = new Digraph(G.V());
+        for (int i = 0; i < G.V(); ++i) {
+            for (int j : G.adj(i))
+                g.addEdge(i, j);
+        }
     }
     
     private static class Impl {

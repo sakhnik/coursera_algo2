@@ -2,6 +2,7 @@
 import java.util.ArrayList;
 import java.util.List;
 import edu.princeton.cs.algs4.Digraph;
+import edu.princeton.cs.algs4.DirectedCycle;
 import edu.princeton.cs.algs4.In;
 import java.util.HashMap;
 import java.util.Map;
@@ -59,6 +60,19 @@ public class WordNet {
                 wordnet.addEdge(synsetId, j);
             }
         }
+
+        DirectedCycle cycle = new DirectedCycle(wordnet);
+        if (cycle.hasCycle())
+            throw new IllegalArgumentException();
+
+        int rootCount = 0;
+        for (int v = 0; v < wordnet.V(); ++v) {
+            if (wordnet.outdegree(v) == 0)
+                ++rootCount;
+        }
+
+        if (rootCount != 1)
+            throw new IllegalArgumentException();
     }
     
     // returns all WordNet nouns
