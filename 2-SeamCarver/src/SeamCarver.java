@@ -39,7 +39,7 @@ public class SeamCarver {
         int dar = a.getRed() - b.getRed();
         int dag = a.getGreen() - b.getGreen();
         int dab = a.getBlue() - b.getBlue();
-        return dar + dag + dab;
+        return dar*dar + dag*dag + dab*dab;
     }
 
     public  double energy(int x, int y) {              // energy of pixel at column x and row y
