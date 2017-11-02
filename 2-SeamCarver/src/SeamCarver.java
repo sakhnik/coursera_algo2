@@ -94,7 +94,7 @@ public class SeamCarver {
         double newEnergy = sEnergy[sx] + view.energy(dx, dy);
         if (newEnergy < dEnergy[dx]) {
             dEnergy[dx] = newEnergy;
-            from[dx][dy] = sx;
+            from[dy][dx] = sx;
         }
     }
 
@@ -102,7 +102,7 @@ public class SeamCarver {
     private int[] findSeam(View view) {
         double[] curEnergy = new double[view.width()];
         double[] nextEnergy = new double[view.width()];
-        int[][] from = new int[view.width()][view.height()];
+        int[][] from = new int[view.height()][view.width()];
 
         for (int x = 0; x < view.width(); ++x)
             curEnergy[x] = view.energy(x, 0);
@@ -116,7 +116,7 @@ public class SeamCarver {
                     relaxPixel(view, x, curEnergy, x-1, y+1, nextEnergy, from);
                 relaxPixel(view, x, curEnergy, x, y+1, nextEnergy, from);
                 if (x+1 < view.width())
-                    relaxPixel(view, x, curEnergy, x, y-1, nextEnergy, from);
+                    relaxPixel(view, x, curEnergy, x+1, y+1, nextEnergy, from);
             }
 
             double[] t = curEnergy;
@@ -135,9 +135,9 @@ public class SeamCarver {
         }
 
         int[] seam = new int[view.height()];
-        seam[view.width()-1] = x;
-        for (int y = view.width()-1; y > 0; --y)
-            seam[y-1] = from[seam[y]][y];
+        seam[view.height()-1] = x;
+        for (int y = view.height()-1; y > 0; --y)
+            seam[y-1] = from[y][seam[y]];
         return seam;
     }
 
