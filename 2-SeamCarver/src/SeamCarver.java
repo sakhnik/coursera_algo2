@@ -56,7 +56,7 @@ public class SeamCarver {
         double energy(int x, int y);
     };
 
-    private class VerticalView implements View {
+    private class UprightView implements View {
         @Override
         public int width() {
             return picture.width();
@@ -73,7 +73,7 @@ public class SeamCarver {
         }
     }
 
-    private class HorizontalView implements View {
+    private class RotatedView implements View {
         @Override
         public int width() {
             return picture.height();
@@ -142,11 +142,11 @@ public class SeamCarver {
     }
 
     public   int[] findHorizontalSeam() {               // sequence of indices for horizontal seam
-        return findSeam(new HorizontalView());
+        return findSeam(new RotatedView());
     }
     
     public   int[] findVerticalSeam() {                 // sequence of indices for vertical seam
-        return findSeam(new VerticalView());
+        return findSeam(new UprightView());
     }
     
     private void checkSeam(View view, int[] seam) {
@@ -163,7 +163,7 @@ public class SeamCarver {
     }
 
     public    void removeHorizontalSeam(int[] seam) {   // remove horizontal seam from current picture
-        checkSeam(new HorizontalView(), seam);
+        checkSeam(new RotatedView(), seam);
 
         Picture newPic = new Picture(width(), height()-1);
         for (int y = 0; y < height(); ++y) {
@@ -179,7 +179,7 @@ public class SeamCarver {
     }
     
     public    void removeVerticalSeam(int[] seam) {     // remove vertical seam from current picture
-        checkSeam(new VerticalView(), seam);
+        checkSeam(new UprightView(), seam);
 
         Picture newPic = new Picture(width()-1, height());
         for (int y = 0; y < height(); ++y) {
