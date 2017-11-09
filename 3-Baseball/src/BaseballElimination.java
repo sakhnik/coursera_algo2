@@ -78,12 +78,16 @@ public class BaseballElimination {
                     G.addEdge(new FlowEdge(k, i, Double.POSITIVE_INFINITY));
                     G.addEdge(new FlowEdge(k, j, Double.POSITIVE_INFINITY));
                 }
-                G.addEdge(new FlowEdge(i, t, pot - wins[i]));
+                double delta = pot - wins[i];
+                if (Double.compare(delta, 0.0) < 0)
+                    delta = 0.0;
+                G.addEdge(new FlowEdge(i, t, delta));
             }
 
             // Find maxflow/mincut
             FordFulkerson ff = new FordFulkerson(G, s, t);
 
+            certs.add(null);
             // Analyze the result
             for (FlowEdge e : G.adj(s)) {
                 if (Double.compare(e.flow(), e.capacity()) != 0) {
@@ -93,7 +97,7 @@ public class BaseballElimination {
                             cert.add(names[i]);
                         }
                     }
-                    certs.add(x, cert);
+                    certs.set(x, cert);
                     break;
                 }
             }
