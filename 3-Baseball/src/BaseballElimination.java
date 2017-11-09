@@ -63,6 +63,8 @@ public class BaseballElimination {
         int s = v - 1;
         int t = v - 2;
         for (int x = 0; x < numberOfTeams; ++x) {
+            certs.add(null);
+
             FlowNetwork G = new FlowNetwork(v);
             for (int i = 0; i < numberOfTeams; ++i) {
                 if (i == x) {
@@ -79,15 +81,24 @@ public class BaseballElimination {
                     G.addEdge(new FlowEdge(k, j, Double.POSITIVE_INFINITY));
                 }
                 double delta = pot - wins[i];
-                if (Double.compare(delta, 0.0) < 0)
-                    delta = 0.0;
+                if (Double.compare(delta, 0.0) < 0) {
+                    // Trivially eliminated
+                    Bag<String> cert = new Bag<>();
+                    cert.add(names[i]);
+                    certs.set(x, cert);
+                    break;
+                }
                 G.addEdge(new FlowEdge(i, t, delta));
+            }
+
+            // If trivially eliminated, no need for maxflow
+            if (certs.get(x) != null) {
+                continue;
             }
 
             // Find maxflow/mincut
             FordFulkerson ff = new FordFulkerson(G, s, t);
 
-            certs.add(null);
             // Analyze the result
             for (FlowEdge e : G.adj(s)) {
                 if (Double.compare(e.flow(), e.capacity()) != 0) {
