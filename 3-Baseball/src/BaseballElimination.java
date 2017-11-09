@@ -4,7 +4,9 @@ import edu.princeton.cs.algs4.FlowEdge;
 import edu.princeton.cs.algs4.FlowNetwork;
 import edu.princeton.cs.algs4.FordFulkerson;
 import edu.princeton.cs.algs4.In;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /*
@@ -21,12 +23,11 @@ public class BaseballElimination {
 
     private final int numberOfTeams;
     private final Map<String, Integer> teams;
-    private final String[] names;
     private final int[] wins;
     private final int[] losses;
     private final int[] remaining;
     private final int[][] against;
-    private final Bag[] certs;
+    private final List<Bag<String>> certs;
 
     // create a baseball division from given filename in format specified below
     public BaseballElimination(String filename) {
@@ -34,12 +35,12 @@ public class BaseballElimination {
         In in = new In(filename);
         numberOfTeams = in.readInt();
         teams = new HashMap<>(numberOfTeams);
-        names = new String[numberOfTeams];
+        String[] names = new String[numberOfTeams];
         wins = new int[numberOfTeams];
         losses = new int[numberOfTeams];
         remaining = new int[numberOfTeams];
         against = new int[numberOfTeams][numberOfTeams];
-        certs = new Bag[numberOfTeams];
+        certs = new ArrayList<>();
 
         for (int i = 0; i < numberOfTeams; ++i) {
             String team = in.readString();
@@ -58,11 +59,11 @@ public class BaseballElimination {
         //   [numberOfTeams..) -- game vertices
         //   the last two -- the source and the target
         // Not all the vertices are connected in a graph, but the mapping is simple
-        int V = numberOfTeams * (numberOfTeams+1) / 2 + 2;
-        int S = V - 1;
-        int T = V - 2;
+        int v = numberOfTeams * (numberOfTeams+1) + 2;
+        int s = v - 1;
+        int t = v - 2;
         for (int x = 0; x < numberOfTeams; ++x) {
-            FlowNetwork G = new FlowNetwork(V);
+            FlowNetwork G = new FlowNetwork(v);
             for (int i = 0; i < numberOfTeams; ++i) {
                 if (i == x) {
                     continue;
@@ -73,26 +74,26 @@ public class BaseballElimination {
                         continue;
                     }
                     int k = (i+1)*numberOfTeams+j;
-                    G.addEdge(new FlowEdge(S, k, against[i][j]));
+                    G.addEdge(new FlowEdge(s, k, against[i][j]));
                     G.addEdge(new FlowEdge(k, i, Double.POSITIVE_INFINITY));
                     G.addEdge(new FlowEdge(k, j, Double.POSITIVE_INFINITY));
                 }
-                G.addEdge(new FlowEdge(i, T, pot - wins[i]));
+                G.addEdge(new FlowEdge(i, t, pot - wins[i]));
             }
 
             // Find maxflow/mincut
-            FordFulkerson ff = new FordFulkerson(G, S, T);
+            FordFulkerson ff = new FordFulkerson(G, s, t);
 
             // Analyze the result
-            for (FlowEdge e : G.adj(S)) {
-                if (e.flow() != e.capacity()) {
-                    Bag cert = new Bag();
+            for (FlowEdge e : G.adj(s)) {
+                if (Double.compare(e.flow(), e.capacity()) != 0) {
+                    Bag<String> cert = new Bag<>();
                     for (int i = 0; i < numberOfTeams; ++i) {
                         if (ff.inCut(i)) {
                             cert.add(names[i]);
                         }
                     }
-                    certs[x] = cert;
+                    certs.add(x, cert);
                     break;
                 }
             }
@@ -138,11 +139,11 @@ public class BaseballElimination {
 
     // is given team eliminated?
     public boolean isEliminated(String team) {
-        return certs[getIdx(team)] != null;
+        return certs.get(getIdx(team)) != null;
     }
 
     // subset R of teams that eliminates given team; null if not eliminated
     public Iterable<String> certificateOfElimination(String team) {
-        return certs[getIdx(team)];
+        return certs.get(getIdx(team));
     }
 }
