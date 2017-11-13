@@ -14,24 +14,24 @@ import java.util.Set;
  * @author sakhnik
  */
 public class BoggleSolver {
-    private static final int[] WORD_SCORE;
+    private static int[] WORD_SCORE;
     private final TST<String> dictionary;
-
-    static {
-        WORD_SCORE = new int[8];
-        WORD_SCORE[0] = 0;
-        WORD_SCORE[1] = 0;
-        WORD_SCORE[2] = 0;
-        WORD_SCORE[3] = 1;
-        WORD_SCORE[4] = 1;
-        WORD_SCORE[5] = 2;
-        WORD_SCORE[6] = 3;
-        WORD_SCORE[7] = 5;
-    }
 
     // Initializes the data structure using the given array of strings as the dictionary.
     // (You can assume each word in the dictionary contains only the uppercase letters A through Z.)
     public BoggleSolver(String[] dictionary) {
+        if (WORD_SCORE == null) {
+            WORD_SCORE = new int[8];
+            WORD_SCORE[0] = 0;
+            WORD_SCORE[1] = 0;
+            WORD_SCORE[2] = 0;
+            WORD_SCORE[3] = 1;
+            WORD_SCORE[4] = 1;
+            WORD_SCORE[5] = 2;
+            WORD_SCORE[6] = 3;
+            WORD_SCORE[7] = 5;
+        }
+
         TST<String> dict = new TST<>();
         for (String word : dictionary) {
             dict.put(word, "");
@@ -57,7 +57,10 @@ public class BoggleSolver {
 
                 visited[row][col] = true;
 
-                String candidate = prefix + board.getLetter(row, col);
+                char nextLetter = board.getLetter(row, col);
+                String candidate = prefix + nextLetter;
+                if (nextLetter == 'Q')
+                    candidate += 'U';
                 if (dictionary.contains(candidate) && !words.contains(candidate)) {
                     words.add(candidate);
                 }
