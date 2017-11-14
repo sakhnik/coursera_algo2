@@ -84,10 +84,10 @@ public class BoggleSolver {
                 if (t == null)
                     return;
 
-                // TODO: any way to avoid creation of new strings?
+                // Unfortunately Java seems to encourage copying strings
                 String candidate = prefix + nextLetter;
                 if (nextLetter == 'Q') {
-                    t = t.check(nextLetter);
+                    t = t.check('U');
                     if (t == null)
                         return;
                     candidate += 'U';
@@ -98,6 +98,7 @@ public class BoggleSolver {
                 }
 
                 visited[row][col] = true;
+
                 if (row > 0) {
                     if (col > 0)
                         search(row-1, col-1, candidate, t);
