@@ -14,31 +14,18 @@ import java.util.Set;
  * @author sakhnik
  */
 public class BoggleSolver {
-    private static int[] WORD_SCORE;
     private final TST<String> dictionary;
 
     // Initializes the data structure using the given array of strings as the dictionary.
     // (You can assume each word in the dictionary contains only the uppercase letters A through Z.)
     public BoggleSolver(String[] dictionary) {
-        if (WORD_SCORE == null) {
-            WORD_SCORE = new int[8];
-            WORD_SCORE[0] = 0;
-            WORD_SCORE[1] = 0;
-            WORD_SCORE[2] = 0;
-            WORD_SCORE[3] = 1;
-            WORD_SCORE[4] = 1;
-            WORD_SCORE[5] = 2;
-            WORD_SCORE[6] = 3;
-            WORD_SCORE[7] = 5;
-        }
-
         TST<String> dict = new TST<>();
         for (String word : dictionary) {
             dict.put(word, "");
         }
         this.dictionary = dict;
     }
-    
+
     // Returns the set of all valid words in the given Boggle board, as an Iterable.
     public Iterable<String> getAllValidWords(BoggleBoard board) {
         boolean[][] visited = new boolean[board.rows()][board.cols()];
@@ -86,12 +73,27 @@ public class BoggleSolver {
 
         return words;
     }
-    
+
     // Returns the score of the given word if it is in the dictionary, zero otherwise.
     // (You can assume the word contains only the uppercase letters A through Z.)
     public int scoreOf(String word) {
-        if (word.length() >= WORD_SCORE.length)
-            return 11;
-        return WORD_SCORE[word.length()];
+
+        switch (word.length()) {
+            case 0:
+            case 1:
+            case 2:
+                return 0;
+            case 3:
+            case 4:
+                return 1;
+            case 5:
+                return 2;
+            case 6:
+                return 3;
+            case 7:
+                return 5;
+            default:
+                return 11;
+        }
     }
 }
