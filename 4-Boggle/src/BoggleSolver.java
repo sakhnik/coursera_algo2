@@ -33,29 +33,40 @@ public class BoggleSolver {
 
         class Searcher {
             void search(int row, int col, String prefix) {
-                if (row < 0 || row >= board.rows())
-                    return;
-                if (col < 0 || col >= board.cols())
-                    return;
                 if (visited[row][col])
                     return;
-                if (prefix.length() > 0 && dictionary.longestPrefixOf(prefix).length() < prefix.length())
+                // TODO: we don't need a collection, just check
+                if (prefix.length() > 0 && dictionary.keysWithPrefix(prefix) == null)
                     return;
 
                 visited[row][col] = true;
 
+                // TODO: any way to avoid creation of new strings?
                 char nextLetter = board.getLetter(row, col);
                 String candidate = prefix + nextLetter;
                 if (nextLetter == 'Q')
                     candidate += 'U';
-                if (dictionary.contains(candidate) && !words.contains(candidate)) {
+                if (candidate.length() > 2 && dictionary.contains(candidate) && !words.contains(candidate)) {
                     words.add(candidate);
                 }
 
-                for (int drow = -1; drow <= 1; ++drow) {
-                    for (int dcol = -1; dcol <= 1; ++dcol) {
-                        search(row + drow, col + dcol, candidate);
-                    }
+                if (row > 0) {
+                    if (col > 0)
+                        search(row-1, col-1, candidate);
+                    search(row-1, col, candidate);
+                    if (col+1 < board.cols())
+                        search(row-1, col+1, candidate);
+                }
+                if (col > 0)
+                    search(row, col-1, candidate);
+                if (col+1 < board.cols())
+                    search(row, col+1, candidate);
+                if (row+1 < board.rows()) {
+                    if (col > 0)
+                        search(row+1, col-1, candidate);
+                    search(row+1, col, candidate);
+                    if (col+1 < board.cols())
+                        search(row+1, col+1, candidate);
                 }
 
                 visited[row][col] = false;
