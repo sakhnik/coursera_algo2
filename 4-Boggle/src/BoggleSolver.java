@@ -39,7 +39,7 @@ public class BoggleSolver {
                     return;
                 if (visited[row][col])
                     return;
-                if (dictionary.longestPrefixOf(prefix).length() < prefix.length())
+                if (prefix.length() > 0 && dictionary.longestPrefixOf(prefix).length() < prefix.length())
                     return;
 
                 visited[row][col] = true;
