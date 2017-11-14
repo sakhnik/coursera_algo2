@@ -1,5 +1,4 @@
 
-import edu.princeton.cs.algs4.TST;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,16 +13,60 @@ import java.util.Set;
  * @author sakhnik
  */
 public class BoggleSolver {
-    private final TST<String> dictionary;
+    private final Trie26 dictionary;
+
+    private static class Trie26 {
+        boolean isPresent = false;
+        Object[] children = new Object[26];
+
+        private Trie26 get(char c) {
+            Trie26 sub = check(c);
+            if (sub == null) {
+                sub = new Trie26();
+                children[c - 'A'] = sub;
+            }
+            return sub;
+        }
+
+        private Trie26 check(char c) {
+            return (Trie26) children[c - 'A'];
+        }
+
+        private void add(String s, int offset) {
+            if (offset == s.length()) {
+                isPresent = true;
+                return;
+            }
+
+            Trie26 sub = get(s.charAt(offset));
+            sub.add(s, offset + 1);
+        }
+
+        void add(String s) {
+            add(s, 0);
+        }
+
+        private boolean has(String s, int offset) {
+            if (offset == s.length())
+                return isPresent;
+            Trie26 sub = check(s.charAt(offset));
+            if (sub == null)
+                return false;
+            return sub.has(s, offset + 1);
+        }
+
+        boolean has(String s) {
+            return has(s, 0);
+        }
+    }
 
     // Initializes the data structure using the given array of strings as the dictionary.
     // (You can assume each word in the dictionary contains only the uppercase letters A through Z.)
-    public BoggleSolver(String[] dictionary) {
-        TST<String> dict = new TST<>();
-        for (String word : dictionary) {
-            dict.put(word, "");
+    public BoggleSolver(String[] words) {
+        dictionary = new Trie26();
+        for (String word : words) {
+            dictionary.add(word);
         }
-        this.dictionary = dict;
     }
 
     // Returns the set of all valid words in the given Boggle board, as an Iterable.
@@ -32,41 +75,46 @@ public class BoggleSolver {
         Set<String> words = new HashSet<>();
 
         class Searcher {
-            void search(int row, int col, String prefix) {
+            void search(int row, int col, String prefix, Trie26 t) {
                 if (visited[row][col])
                     return;
-                // TODO: we don't need a collection, just check
-                if (prefix.length() > 0 && dictionary.keysWithPrefix(prefix) == null)
+
+                char nextLetter = board.getLetter(row, col);
+                t = t.check(nextLetter);
+                if (t == null)
                     return;
 
-                visited[row][col] = true;
-
                 // TODO: any way to avoid creation of new strings?
-                char nextLetter = board.getLetter(row, col);
                 String candidate = prefix + nextLetter;
-                if (nextLetter == 'Q')
+                if (nextLetter == 'Q') {
+                    t = t.check(nextLetter);
+                    if (t == null)
+                        return;
                     candidate += 'U';
-                if (candidate.length() > 2 && dictionary.contains(candidate) && !words.contains(candidate)) {
+                }
+
+                if (candidate.length() > 2 && dictionary.has(candidate) && !words.contains(candidate)) {
                     words.add(candidate);
                 }
 
+                visited[row][col] = true;
                 if (row > 0) {
                     if (col > 0)
-                        search(row-1, col-1, candidate);
-                    search(row-1, col, candidate);
+                        search(row-1, col-1, candidate, t);
+                    search(row-1, col, candidate, t);
                     if (col+1 < board.cols())
-                        search(row-1, col+1, candidate);
+                        search(row-1, col+1, candidate, t);
                 }
                 if (col > 0)
-                    search(row, col-1, candidate);
+                    search(row, col-1, candidate, t);
                 if (col+1 < board.cols())
-                    search(row, col+1, candidate);
+                    search(row, col+1, candidate, t);
                 if (row+1 < board.rows()) {
                     if (col > 0)
-                        search(row+1, col-1, candidate);
-                    search(row+1, col, candidate);
+                        search(row+1, col-1, candidate, t);
+                    search(row+1, col, candidate, t);
                     if (col+1 < board.cols())
-                        search(row+1, col+1, candidate);
+                        search(row+1, col+1, candidate, t);
                 }
 
                 visited[row][col] = false;
@@ -78,7 +126,7 @@ public class BoggleSolver {
         // Try starting from any position
         for (int row = 0; row < board.rows(); ++row) {
             for (int col = 0; col < board.cols(); ++col) {
-                searcher.search(row, col, "");
+                searcher.search(row, col, "", dictionary);
             }
         }
 
