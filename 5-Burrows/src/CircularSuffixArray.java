@@ -13,7 +13,7 @@ import java.util.Comparator;
  * @author sakhnik
  */
 public class CircularSuffixArray {
-    private Integer[] idx;
+    private final Integer[] idx;
 
     public CircularSuffixArray(String s) {  // circular suffix array of s
         if (s == null)
