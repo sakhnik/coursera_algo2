@@ -13,7 +13,7 @@ import java.util.Comparator;
  * @author sakhnik
  */
 public class CircularSuffixArray {
-    Integer[] idx;
+    private Integer[] idx;
 
     public CircularSuffixArray(String s) {  // circular suffix array of s
         if (s == null)
@@ -32,14 +32,16 @@ public class CircularSuffixArray {
                 for (int i = 0; i < s.length(); ++i) {
                     char c1 = s.charAt(a);
                     char c2 = s.charAt(b);
-                    if (c1 == c2) {
-                        if (++a >= s.length())
-                            a = 0;
-                        if (++b >= s.length())
-                            b = 0;
-                        continue;
-                    }
-                    return c1 < c2 ? -1 : 1;
+                    if (c1 < c2)
+                        return -1;
+                    if (c1 > c2)
+                        return 1;
+                    ++a;
+                    if (a >= s.length())
+                        a = 0;
+                    ++b;
+                    if (b >= s.length())
+                        b = 0;
                 }
 
                 return 0;

@@ -39,6 +39,7 @@ public class MoveToFront {
         while (!BinaryStdIn.isEmpty()) {
             BinaryStdOut.write((char) encoder.encode(BinaryStdIn.readChar()));
         }
+        BinaryStdOut.close();
     }
 
     private static class Decoder {
@@ -64,6 +65,7 @@ public class MoveToFront {
         while (!BinaryStdIn.isEmpty()) {
             BinaryStdOut.write(decoder.decode(BinaryStdIn.readChar()));
         }
+        BinaryStdOut.close();
     }
 
     // if args[0] is '-', apply move-to-front encoding

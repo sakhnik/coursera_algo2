@@ -29,6 +29,8 @@ public class BurrowsWheeler {
             char ch = input.charAt((csa.index(i) + csa.length() - 1) % csa.length());
             BinaryStdOut.write(ch);
         }
+
+        BinaryStdOut.close();
     }
 
     // apply Burrows-Wheeler decoding, reading from standard input and writing to standard output
@@ -58,6 +60,8 @@ public class BurrowsWheeler {
             BinaryStdOut.write(sorted[first]);
             first = next[first];
         }
+
+        BinaryStdOut.close();
     }
 
     // if args[0] is '-', apply Burrows-Wheeler encoding
