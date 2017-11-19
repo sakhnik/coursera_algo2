@@ -14,7 +14,7 @@ import edu.princeton.cs.algs4.BinaryStdOut;
  */
 public class MoveToFront {
 
-    static class Encoder {
+    private static class Encoder {
         char[] abc = new char[256];
         Encoder() {
             for (int i = 0; i < abc.length; ++i)
@@ -41,7 +41,7 @@ public class MoveToFront {
         }
     }
 
-    static class Decoder {
+    private static class Decoder {
         char[] abc = new char[256];
         Decoder() {
             for (int i = 0; i < abc.length; ++i)
